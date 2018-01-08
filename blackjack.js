@@ -183,7 +183,14 @@ function showDown() {
     console.log('Dealer: ' + DEALER.cards.map(c => c.symbol).join(' '));
     console.log('Dealer Points: ' + DEALER.points);
 
-    const result = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';
+    let result = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';    
+    if (DEALER.points > 21) {
+        result = 'PLAYER';
+    }
+
+    if (DEALER.points === PLAYER.points) {
+        result = 'NOBODY';
+    }
 
     console.log(result + ' WINS!!!');
 }
@@ -201,7 +208,7 @@ const DEALER = new Dealer();
 
 initialDeal();
 
-while (!isGameOver() || (lastAnswers.dealer === false && lastAnswers.player === false)) {
+while (true) {
     displayState();
 
     let res = nextTurn();
@@ -221,9 +228,9 @@ while (!isGameOver() || (lastAnswers.dealer === false && lastAnswers.player === 
 }
 
 if (isGameOver()) {
+    displayState();
     console.log('GAME OVER');
-
-    displayState();    
+        
     process.exit(-1);
 } else {
     showDown();
