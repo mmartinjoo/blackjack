@@ -21,6 +21,10 @@ const CARDS = [
 ];
 
 let currentTurn = 'player';
+const lastAnswers = {
+    player: true,
+    dealer: true
+};
 
 class BasePlayer {
     constructor() {
@@ -68,7 +72,10 @@ class Player extends BasePlayer {
 
     turn() {
         const answer = readline.question('Kérsz lapot? ');
-        return answer.toLowerCase() === 'y';
+        const result = answer.toLowerCase() === 'y';
+
+        lastAnswers.player = result;
+        return result;
     }
 }
 
@@ -110,6 +117,8 @@ class Dealer extends BasePlayer {
         } else {
             console.log('Dealer NOT requested a card');            
         }
+
+        lastAnswers.dealer = result;
 
         return result;
     }
@@ -162,6 +171,23 @@ function dealCard() {
     pl.addCard(getRandomCard());
 }
 
+function showDown() {
+    console.log('\r\n');
+    console.log('SHOW DOWN');
+
+    console.log('Player: ' + PLAYER.cards.map(c => c.symbol).join(' '));
+    console.log('Player Points: ' + PLAYER.points);
+
+    console.log('---------------');
+
+    console.log('Dealer: ' + DEALER.cards.map(c => c.symbol).join(' '));
+    console.log('Dealer Points: ' + DEALER.points);
+
+    const result = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';
+
+    console.log(result + ' WINS!!!');
+}
+
 function isGameOver() {
     if (PLAYER.points > 21) {
         return true;
@@ -175,7 +201,7 @@ const DEALER = new Dealer();
 
 initialDeal();
 
-while (!isGameOver()) {
+while (!isGameOver() || (lastAnswers.dealer === false && lastAnswers.player === false)) {
     displayState();
 
     let res = nextTurn();
@@ -184,39 +210,22 @@ while (!isGameOver()) {
     }
 
     flipTurn();    
+
+    if (isGameOver()) {
+        break;
+    }
+
+    if (lastAnswers.dealer === false && lastAnswers.player === false) {
+        break;
+    }
 }
 
 if (isGameOver()) {
     console.log('GAME OVER');
-    
+
     displayState();    
     process.exit(-1);
+} else {
+    showDown();
+    process.exit(-1);    
 }
-
-
-
-
-
-
-
-// displayState();
-// let res = nextTurn();
-// if (res) {
-//     dealCard();
-// }
-
-// flipTurn();
-// displayState();
-
-// if (isGameOver()) {
-//     console.log('GAME OVER');
-//     process.exit(-1);
-// }
-
-// res = nextTurn();
-// if (res) {
-//     dealCard();
-// }
-
-// flipTurn();
-// displayState();
