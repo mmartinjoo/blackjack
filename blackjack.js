@@ -27,7 +27,7 @@ const CARDS = [
     { name: 'ace', value: 11, symbol: 'A' }          // 1
 ];
 
-let currentTurn = 'player';
+let currentTurn = 'dealer';
 
 class BasePlayer {
     constructor () {
@@ -62,17 +62,53 @@ class BasePlayer {
     getOtherCardsForDisplay() {
         return this.cards.slice(1);
     }
+
+    turn() {
+        throw new Error('Unimplemented');
+    }
 }
 
 class Player extends BasePlayer {
     getOtherCardsForDisplay() {
         return super.getOtherCardsForDisplay().map(c => c.symbol);
     }
+
+    turn() {
+
+    }
 }
 
 class Dealer extends BasePlayer {
     getOtherCardsForDisplay() {
         return super.getOtherCardsForDisplay().map(c => 'X')
+    }
+
+    turn() {
+        if (this.points === 20 || this.points === 21) return false;
+
+        if (this.points === 19) {
+            return Math.random() < 0.05 ? true : false;            
+        }
+
+        if (this.points === 18) {
+            return Math.random() < 0.25 ? true : false;
+        }
+
+        if (this.points === 17) {
+            return Math.random() < 0.4 ? true : false;            
+        }
+
+        if (this.points === 16) {
+            return Math.random() < 0.75 ? true : false;
+        }
+
+        if (this.points === 15) {
+            return Math.random() < 0.9 ? true : false;               
+        }
+
+        if (this.points < 15) {
+            return true;
+        }
     }
 }
 
@@ -97,8 +133,24 @@ function displayState() {
     console.log('Dealer: ', DEALER.cardsForDisplay());
 }
 
+function nextTurn() {
+    let needCard = false;
+    if (currentTurn === 'player') {
+        needCard = PLAYER.turn();
+        currentTurn = 'dealer';
+    } else {
+        needCard = DEALER.turn();
+        currentTurn = 'player';
+    }
+
+    return needCard;
+}
+
 const PLAYER = new Player();
 const DEALER = new Dealer();
 
 initialDeal();
 displayState();
+console.log('Dealer points: ', DEALER.points);
+const res = nextTurn();
+console.log(res);
