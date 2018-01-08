@@ -12,19 +12,19 @@
 // });
 
 const CARDS = [
-    { name: 'deuce', value: 2 },
-    { name: 'three', value: 3 },
-    { name: 'four', value: 4 },
-    { name: 'five', value: 5 },
-    { name: 'six', value: 6 },
-    { name: 'seven', value: 7 },
-    { name: 'eight', value: 8 },
-    { name: 'nine', value: 9 },
-    { name: 'ten', value: 10 },
-    { name: 'jack', value: 10 },
-    { name: 'queen', value: 10 },
-    { name: 'king', value: 10 },    
-    { name: 'ace', value: 11 }          // 1
+    { name: 'deuce', value: 2, symbol: '2', },
+    { name: 'three', value: 3, symbol: '3' },
+    { name: 'four', value: 4, symbol: '4' },
+    { name: 'five', value: 5, symbol: '5' },
+    { name: 'six', value: 6, symbol: '6' },
+    { name: 'seven', value: 7, symbol: '7' },
+    { name: 'eight', value: 8, symbol: '8' },
+    { name: 'nine', value: 9, symbol: '9' },
+    { name: 'ten', value: 10, symbol: '10' },
+    { name: 'jack', value: 10, symbol: 'J' },
+    { name: 'queen', value: 10, symbol: 'Q' },
+    { name: 'king', value: 10, symbol: 'K' },    
+    { name: 'ace', value: 11, symbol: 'A' }          // 1
 ];
 
 let currentTurn = 'player';
@@ -48,17 +48,32 @@ class BasePlayer {
         cards.forEach(c => this.addCard(c));
     }
 
-    getFirstCard() {
-        return this.cards[0];
+    cardsForDisplay() {
+        return [
+            this.getFirstCardSymbol(),
+            ...this.getOtherCardsForDisplay()
+        ].join(' ');
+    }
+
+    getFirstCardSymbol() {
+        return this.cards[0].symbol;
+    }
+
+    getOtherCardsForDisplay() {
+        return this.cards.slice(1);
     }
 }
 
 class Player extends BasePlayer {
-
+    getOtherCardsForDisplay() {
+        return super.getOtherCardsForDisplay().map(c => c.symbol);
+    }
 }
 
 class Dealer extends BasePlayer {
-
+    getOtherCardsForDisplay() {
+        return super.getOtherCardsForDisplay().map(c => 'X')
+    }
 }
 
 function getRandomCard() {
@@ -70,13 +85,20 @@ function getRandomCards(n) {
     return Array(n).fill(0).map(_ => getRandomCard());
 }
 
-function initialDeal(player, dealer) {
-    player.addCards(getRandomCards(2));
-    dealer.addCards(getRandomCards(2));
+function initialDeal() {
+    PLAYER.addCards(getRandomCards(2));
+    DEALER.addCards(getRandomCards(2));
 }
 
-const player = new Player();
-const dealer = new Dealer();
+function displayState() {
+    console.log('Player points: ' + PLAYER.points);
+    console.log('----');
+    console.log('Player: ', PLAYER.cardsForDisplay());
+    console.log('Dealer: ', DEALER.cardsForDisplay());
+}
 
-initialDeal(player, dealer);
-console.log(player.getFirstCard());
+const PLAYER = new Player();
+const DEALER = new Dealer();
+
+initialDeal();
+displayState();
