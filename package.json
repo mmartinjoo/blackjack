@@ -1,0 +1,23 @@
+{
+  "name": "blackjack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "blackjack.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joomartin/blackjack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joomartin/blackjack/issues"
+  },
+  "homepage": "https://github.com/joomartin/blackjack#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.7"
+  }
+}

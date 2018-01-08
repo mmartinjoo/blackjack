@@ -1,15 +1,8 @@
+const readline = require('readline-sync');
+
 // const readline = require('readline');
 // const rl = readline.createInterface(process.stdin, process.stdout);
 
-// rl.setPrompt('Kérsz lapot?');
-// rl.prompt();
-
-// rl.on('line', function(line) {
-//     if (line === "right") rl.close();
-//     rl.prompt();
-// }).on('close',function(){
-//     process.exit(0);
-// });
 
 const CARDS = [
     { name: 'deuce', value: 2, symbol: '2', },
@@ -23,14 +16,14 @@ const CARDS = [
     { name: 'ten', value: 10, symbol: '10' },
     { name: 'jack', value: 10, symbol: 'J' },
     { name: 'queen', value: 10, symbol: 'Q' },
-    { name: 'king', value: 10, symbol: 'K' },    
+    { name: 'king', value: 10, symbol: 'K' },
     { name: 'ace', value: 11, symbol: 'A' }          // 1
 ];
 
-let currentTurn = 'dealer';
+let currentTurn = 'player';
 
 class BasePlayer {
-    constructor () {
+    constructor() {
         this.cards = [];
     }
 
@@ -40,7 +33,7 @@ class BasePlayer {
             .reduce((sum, value) => sum + value, 0);
     }
 
-    addCard(card) {
+    addCard(card)  {
         this.cards.push(card);
     }
 
@@ -74,7 +67,8 @@ class Player extends BasePlayer {
     }
 
     turn() {
-
+        const answer = readline.question('Kérsz lapot? ');
+        return answer.toLowerCase() === 'y';
     }
 }
 
@@ -84,31 +78,40 @@ class Dealer extends BasePlayer {
     }
 
     turn() {
-        if (this.points === 20 || this.points === 21) return false;
+        let result = false;
+        if (this.points === 20 ||  this.points === 21) result = false;
 
         if (this.points === 19) {
-            return Math.random() < 0.05 ? true : false;            
+            result = Math.random() < 0.05 ? true : false;
         }
 
         if (this.points === 18) {
-            return Math.random() < 0.25 ? true : false;
+            result = Math.random() < 0.25 ? true : false;
         }
 
         if (this.points === 17) {
-            return Math.random() < 0.4 ? true : false;            
+            result = Math.random() < 0.4 ? true : false;
         }
 
         if (this.points === 16) {
-            return Math.random() < 0.75 ? true : false;
+            result = Math.random() < 0.75 ? true : false;
         }
 
         if (this.points === 15) {
-            return Math.random() < 0.9 ? true : false;               
+            result = Math.random() < 0.9 ? true : false;
         }
 
         if (this.points < 15) {
-            return true;
+            result = true;
         }
+
+        if (result) {
+            console.log('Dealer requested a card');
+        } else {
+            console.log('Dealer NOT requested a card');            
+        }
+
+        return result;
     }
 }
 
@@ -127,6 +130,7 @@ function initialDeal() {
 }
 
 function displayState() {
+    console.log('\r\n');
     console.log('Player points: ' + PLAYER.points);
     console.log('----');
     console.log('Player: ', PLAYER.cardsForDisplay());
@@ -135,22 +139,84 @@ function displayState() {
 
 function nextTurn() {
     let needCard = false;
+    console.log(currentTurn + ' turns');
     if (currentTurn === 'player') {
         needCard = PLAYER.turn();
-        currentTurn = 'dealer';
     } else {
         needCard = DEALER.turn();
-        currentTurn = 'player';
     }
 
     return needCard;
+}
+
+function flipTurn() {
+    if (currentTurn === 'player') {
+        currentTurn = 'dealer';
+    } else {
+        currentTurn = 'player';
+    }
+}
+
+function dealCard() {
+    const pl = currentTurn === 'player' ? PLAYER : DEALER;
+    pl.addCard(getRandomCard());
+}
+
+function isGameOver() {
+    if (PLAYER.points > 21) {
+        return true;
+    }
+
+    return false;
 }
 
 const PLAYER = new Player();
 const DEALER = new Dealer();
 
 initialDeal();
-displayState();
-console.log('Dealer points: ', DEALER.points);
-const res = nextTurn();
-console.log(res);
+
+while (!isGameOver()) {
+    displayState();
+
+    let res = nextTurn();
+    if (res) {
+        dealCard();
+    }
+
+    flipTurn();    
+}
+
+if (isGameOver()) {
+    console.log('GAME OVER');
+    
+    displayState();    
+    process.exit(-1);
+}
+
+
+
+
+
+
+
+// displayState();
+// let res = nextTurn();
+// if (res) {
+//     dealCard();
+// }
+
+// flipTurn();
+// displayState();
+
+// if (isGameOver()) {
+//     console.log('GAME OVER');
+//     process.exit(-1);
+// }
+
+// res = nextTurn();
+// if (res) {
+//     dealCard();
+// }
+
+// flipTurn();
+// displayState();
