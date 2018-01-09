@@ -1,23 +1,19 @@
 const readline = require('readline-sync');
 
-// const readline = require('readline');
-// const rl = readline.createInterface(process.stdin, process.stdout);
-
-
 const CARDS = [
-    { name: 'deuce', value: 2, symbol: '2', },
-    { name: 'three', value: 3, symbol: '3' },
-    { name: 'four', value: 4, symbol: '4' },
-    { name: 'five', value: 5, symbol: '5' },
-    { name: 'six', value: 6, symbol: '6' },
-    { name: 'seven', value: 7, symbol: '7' },
-    { name: 'eight', value: 8, symbol: '8' },
-    { name: 'nine', value: 9, symbol: '9' },
-    { name: 'ten', value: 10, symbol: '10' },
-    { name: 'jack', value: 10, symbol: 'J' },
-    { name: 'queen', value: 10, symbol: 'Q' },
-    { name: 'king', value: 10, symbol: 'K' },
-    { name: 'ace', value: 11, symbol: 'A' }          // 1
+    { value: 2, symbol: '2', },
+    { value: 3, symbol: '3' },
+    { value: 4, symbol: '4' },
+    { value: 5, symbol: '5' },
+    { value: 6, symbol: '6' },
+    { value: 7, symbol: '7' },
+    { value: 8, symbol: '8' },
+    { value: 9, symbol: '9' },
+    { value: 10, symbol: '10' },
+    { value: 10, symbol: 'J' },
+    { value: 10, symbol: 'Q' },
+    { value: 10, symbol: 'K' },
+    { value: 11, symbol: 'A' }          // 1
 ];
 
 let currentTurn = 'player';
@@ -149,6 +145,7 @@ function displayState() {
 function nextTurn() {
     let needCard = false;
     console.log(currentTurn + ' turns');
+    
     if (currentTurn === 'player') {
         needCard = PLAYER.turn();
     } else {
@@ -171,6 +168,19 @@ function dealCard() {
     pl.addCard(getRandomCard());
 }
 
+function getWinner() {
+    let winner = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';    
+    if (DEALER.points > 21) {
+        winner = 'PLAYER';
+    }
+
+    if (DEALER.points === PLAYER.points) {
+        winner = 'NOBODY';
+    }
+
+    return winner;
+}
+
 function showDown() {
     console.log('\r\n');
     console.log('SHOW DOWN');
@@ -183,16 +193,8 @@ function showDown() {
     console.log('Dealer: ' + DEALER.cards.map(c => c.symbol).join(' '));
     console.log('Dealer Points: ' + DEALER.points);
 
-    let result = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';    
-    if (DEALER.points > 21) {
-        result = 'PLAYER';
-    }
 
-    if (DEALER.points === PLAYER.points) {
-        result = 'NOBODY';
-    }
-
-    console.log(result + ' WINS!!!');
+    console.log(getWinner() + ' WINS!!!');
 }
 
 function isGameOver() {
@@ -230,9 +232,6 @@ while (true) {
 if (isGameOver()) {
     displayState();
     console.log('GAME OVER');
-        
-    process.exit(-1);
 } else {
     showDown();
-    process.exit(-1);    
 }
