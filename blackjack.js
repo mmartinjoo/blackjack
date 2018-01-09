@@ -13,7 +13,7 @@ const CARDS = [
     { value: 10, symbol: 'J' },
     { value: 10, symbol: 'Q' },
     { value: 10, symbol: 'K' },
-    { value: 11, symbol: 'A' }          // 1
+    { value: 11, symbol: 'A' }
 ];
 
 let currentTurn = 'player';
@@ -28,9 +28,17 @@ class BasePlayer {
     }
 
     get points() {
-        return this.cards
+        const sum = this.cards
             .map(c => c.value)
             .reduce((sum, value) => sum + value, 0);
+
+        const hasAce = this.cards.some(c => c.symbol === 'A');
+
+        if (sum > 21 && hasAce) {
+            return sum - 10;
+        }
+
+        return sum;
     }
 
     addCard(card) {
