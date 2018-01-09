@@ -34,11 +34,9 @@ class BasePlayer {
 
         const hasAce = this.cards.some(c => c.symbol === 'A');
 
-        if (sum > 21 && hasAce) {
-            return sum - 10;
-        }
-
-        return sum;
+        return sum > 21 && hasAce
+            ? sum - 10
+            : sum;
     }
 
     addCard(card) {
