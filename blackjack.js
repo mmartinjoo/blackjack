@@ -56,6 +56,10 @@ class BasePlayer {
         return this.cards.slice(1);
     }
 
+    revealCards() {
+        return this.cards.map(c => c.symbol).join(' ');
+    }
+
     turn() {
         throw new Error('Unimplemented');
     }
@@ -196,6 +200,10 @@ function getWinner() {
         winner = 'NOBODY';
     }
 
+    if (isGameOver()) {
+        winner = DEALER.points > 21 ? 'NOBODY' : 'DEALER';
+    }
+
     return winner;
 }
 
@@ -203,12 +211,12 @@ function showDown() {
     console.log('\r\n');
     console.log('SHOW DOWN');
 
-    console.log('Player: ' + PLAYER.cards.map(c => c.symbol).join(' '));
+    console.log('Player: ' + PLAYER.revealCards());
     console.log('Player Points: ' + PLAYER.points);
 
     console.log('---------------');
 
-    console.log('Dealer: ' + DEALER.cards.map(c => c.symbol).join(' '));
+    console.log('Dealer: ' + DEALER.revealCards());
     console.log('Dealer Points: ' + DEALER.points);
 
 
@@ -247,9 +255,7 @@ while (true) {
     }
 }
 
-if (isGameOver()) {
-    displayState();
-    console.log('GAME OVER');
-} else {
-    showDown();
-}
+if (isGameOver()) 
+    console.log('GAME OVER');            
+
+showDown();
