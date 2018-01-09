@@ -33,7 +33,7 @@ class BasePlayer {
             .reduce((sum, value) => sum + value, 0);
     }
 
-    addCard(card)  {
+    addCard(card) {
         this.cards.push(card);
     }
 
@@ -81,37 +81,55 @@ class Dealer extends BasePlayer {
     }
 
     turn() {
-        let result = false;
-        if (this.points === 20 ||  this.points === 21) result = false;
+        const ACTIONS = [
+            { points: [20, 21], result: () => false },
+            { points: 19, result: () => Math.random() < 0.05 },
+            { points: 18, result: () => Math.random() < 0.25 },
+            { points: 17, result: () => Math.random() < 0.4 },
+            { points: 16, result: () => Math.random() < 0.75 },
+            { points: 15, result: () => Math.random() < 0.9 },
+            { points: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], result: () => true }
+        ];
 
-        if (this.points === 19) {
-            result = Math.random() < 0.05 ? true : false;
-        }
+        const action = ACTIONS.find(item => {
+            return Array.isArray(item.points) 
+                ? item.points.some(p => p === this.points)
+                : item.points === this.points;
+        }) || { result: () => false };
 
-        if (this.points === 18) {
-            result = Math.random() < 0.25 ? true : false;
-        }
+        const result = action.result();
 
-        if (this.points === 17) {
-            result = Math.random() < 0.4 ? true : false;
-        }
+        // let result = false;
+        // if (this.points === 20 || this.points === 21) result = false;
 
-        if (this.points === 16) {
-            result = Math.random() < 0.75 ? true : false;
-        }
+        // if (this.points === 19) {
+        //     result = Math.random() < 0.05 ? true : false;
+        // }
 
-        if (this.points === 15) {
-            result = Math.random() < 0.9 ? true : false;
-        }
+        // if (this.points === 18) {
+        //     result = Math.random() < 0.25 ? true : false;
+        // }
 
-        if (this.points < 15) {
-            result = true;
-        }
+        // if (this.points === 17) {
+        //     result = Math.random() < 0.4 ? true : false;
+        // }
+
+        // if (this.points === 16) {
+        //     result = Math.random() < 0.75 ? true : false;
+        // }
+
+        // if (this.points === 15) {
+        //     result = Math.random() < 0.9 ? true : false;
+        // }
+
+        // if (this.points < 15) {
+        //     result = true;
+        // }
 
         if (result) {
             console.log('Dealer requested a card');
         } else {
-            console.log('Dealer NOT requested a card');            
+            console.log('Dealer NOT requested a card');
         }
 
         lastAnswers.dealer = result;
@@ -145,7 +163,7 @@ function displayState() {
 function nextTurn() {
     let needCard = false;
     console.log(currentTurn + ' turns');
-    
+
     if (currentTurn === 'player') {
         needCard = PLAYER.turn();
     } else {
@@ -169,7 +187,7 @@ function dealCard() {
 }
 
 function getWinner() {
-    let winner = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';    
+    let winner = PLAYER.points > DEALER.points ? 'PLAYER' : 'DEALER';
     if (DEALER.points > 21) {
         winner = 'PLAYER';
     }
@@ -218,7 +236,7 @@ while (true) {
         dealCard();
     }
 
-    flipTurn();    
+    flipTurn();
 
     if (isGameOver()) {
         break;
